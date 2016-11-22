@@ -10,13 +10,6 @@ import static org.junit.Assert.*;
 public class FileSystemTest {
 
     @Test
-    public void createFile() {
-        FileSystem fs = new FileSystem();
-        fs.touch("test_file");
-        assertEquals("test_file", fs.get("test_file").getFileName());
-    }
-
-    @Test
     public void currentWorkingDir() {
         FileSystem fs = new FileSystem();
         String pwd = fs.pwd();
