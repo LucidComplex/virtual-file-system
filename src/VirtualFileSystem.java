@@ -107,6 +107,14 @@ class FileSystem {
         return listing;
     }
 
+    public List<String> ls(String path) {
+        Node<FileObject> temp = currentNode;
+        cd(path);
+        List<String> listing = ls();
+        currentNode = temp;
+        return listing;
+    }
+
     public void cd(String path) {
         if (path.startsWith("/root")) {
             String[] directories = path.split("/");
