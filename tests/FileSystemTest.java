@@ -67,7 +67,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void rmdir() throws NotADirectoryException {
+    public void rmdir() throws NotADirectoryException, IllegalOperationException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.rmdir("newFolder");
@@ -76,7 +76,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteRmdir() throws NotADirectoryException {
+    public void absoluteRmdir() throws NotADirectoryException, IllegalOperationException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
