@@ -106,4 +106,18 @@ public class FileSystemTest {
         assertFalse(dir.contains("another"));
     }
 
+    @Test
+    public void touch() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.touch("file");
+        List<String> list = fs.ls();
+        assertTrue(list.contains("file"));
+    }
+
+    @Test
+    public void edit() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.edit("test", "Hello World.");
+        assertEquals("Hello World.", fs.cat("test"));
+    }
 }
