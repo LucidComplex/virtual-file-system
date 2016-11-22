@@ -107,9 +107,18 @@ class FileSystem {
         return listing;
     }
 
-    public void cd(String folderName) {
+    public void cd(String path) {
+        if (path.startsWith("/root")) {
+            String[] directories = path.split("/");
+            if (directories.length == 1) {
+                currentNode = root;
+            }
+            for (String dir : directories) {
+                cd(dir);
+            }
+        }
         for (Node<FileObject> child : currentNode.getChildren()) {
-            if (child.getItem().getFileName().equals(folderName)) {
+            if (child.getItem().getFileName().equals(path)) {
                 currentNode = child;
                 return;
             }
