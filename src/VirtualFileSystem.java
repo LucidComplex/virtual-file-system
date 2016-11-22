@@ -232,3 +232,7 @@ class Node<T> {
 class NotADirectoryException extends Exception {
 
 }
+
+class IllegalOperationException extends Exception {
+
+}
