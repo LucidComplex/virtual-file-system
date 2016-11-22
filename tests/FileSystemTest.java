@@ -38,4 +38,14 @@ public class FileSystemTest {
         fs.cd("newFolder");
         assertEquals("/root/newFolder", fs.pwd());
     }
+
+    @Test
+    public void changeDirAbsolute() {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.cd("newFolder");
+        assertEquals("/root/newFolder", fs.pwd());
+        fs.cd("/root");
+        assertEquals("/root", fs.pwd());
+    }
 }
