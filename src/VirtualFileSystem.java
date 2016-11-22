@@ -97,9 +97,10 @@ class FileSystem {
     public void mkdir(String path) throws NotADirectoryException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
+            cd("/root");
             String[] directories = path.split("/");
             if (directories.length > 1) {
-                for (int i = 0; i < directories.length - 1; i++) {
+                for (int i = 1; i < directories.length - 1; i++) {
                     cd(directories[i]);
                 }
                 mkdir(directories[directories.length - 1]);
