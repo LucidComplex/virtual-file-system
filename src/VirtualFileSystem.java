@@ -106,8 +106,15 @@ class FileSystem {
                 mkdir(directories[directories.length - 1]);
             }
             currentNode = temp;
+        } else {
+            Node<FileObject> temp = currentNode;
+            String[] dirs = path.split("/");
+            for (int i = 0; i < dirs.length - 1; i++) {
+                cd(dirs[i]);
+            }
+            currentNode.addChild(new FileObject(dirs[dirs.length - 1], FileObject.DIRECTORY));
+            currentNode = temp;
         }
-        currentNode.addChild(new FileObject(path, FileObject.DIRECTORY));
     }
 
     public List<String> ls() {
