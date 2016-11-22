@@ -74,4 +74,14 @@ public class FileSystemTest {
         List<String> dir = fs.ls();
         assertFalse(dir.contains("newFolder"));
     }
+
+    @Test
+    public void absoluteRmdir() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.mkdir("/root/newFolder/another");
+        fs.rmdir("/root/newFolder/another");
+        List<String> dir = fs.ls("/root/newFolder");
+        assertFalse(dir.contains("another"));
+    }
 }
