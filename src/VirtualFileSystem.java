@@ -145,6 +145,20 @@ class FileSystem {
             }
         }
     }
+
+    public void rmdir(String path) throws NotADirectoryException {
+        for (int i = 0; i < currentNode.getChildren().size(); i++) {
+            Node<FileObject> child = currentNode.getChildren().get(i);
+            if (child.getItem().getFileName().equals(path)) {
+                if (!child.getItem().isFile()) {
+                    currentNode.removeChild(i);
+                    return;
+                } else {
+                    throw new NotADirectoryException();
+                }
+            }
+        }
+    }
 }
 
 class Node<T> {

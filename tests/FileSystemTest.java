@@ -65,4 +65,15 @@ public class FileSystemTest {
         fs.touch("File");
         fs.cd("File");
     }
+
+    @Test
+    public void rmdir() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        List<String> dir = fs.ls();
+        assertTrue(dir.contains("newFolder"));
+        fs.rmdir("newFolder");
+        dir = fs.ls();
+        assertFalse(dir.contains("newFolder"));
+    }
 }
