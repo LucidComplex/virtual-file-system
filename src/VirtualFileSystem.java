@@ -65,7 +65,7 @@ class FileSystem {
         currentNode = root;
     }
 
-    public void touch(String path) throws NotADirectoryException {
+    public void touch(String path) throws NotADirectoryException, PathNotFoundException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
             cd("/root");
@@ -113,12 +113,12 @@ class FileSystem {
         return builder.toString();
     }
 
-    public void mkdir(String path) throws NotADirectoryException {
+    public void mkdir(String path) throws NotADirectoryException, PathNotFoundException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
             cd("/root");
             String[] directories = path.split("/");
-            for (int i = 1; i < directories.length - 1; i++) {
+            for (int i = 2; i < directories.length - 1; i++) {
                 cd(directories[i]);
             }
             mkdir(directories[directories.length - 1]);
@@ -142,7 +142,7 @@ class FileSystem {
         return listing;
     }
 
-    public List<String> ls(String path) throws NotADirectoryException {
+    public List<String> ls(String path) throws NotADirectoryException, PathNotFoundException {
         Node<FileObject> temp = currentNode;
         cd(path);
         List<String> listing = ls();
@@ -150,13 +150,11 @@ class FileSystem {
         return listing;
     }
 
-    public void cd(String path) throws NotADirectoryException {
+    public void cd(String path) throws NotADirectoryException, PathNotFoundException {
         if (path.startsWith("/root")) {
             String[] directories = path.split("/");
-            if (directories.length == 1) {
-                currentNode = root;
-            }
-            for (int i = 1; i < directories.length; i++) {
+            currentNode = root;
+            for (int i = 2; i < directories.length; i++) {
                 cd(directories[i]);
             }
             return;
@@ -166,6 +164,7 @@ class FileSystem {
             for (int i = 0; i < dirs.length; i++) {
                 cd(dirs[i]);
             }
+            return;
         }
         for (Node<FileObject> child : currentNode.getChildren()) {
             if (child.getItem().getFileName().equals(path)) {
@@ -176,16 +175,17 @@ class FileSystem {
                 return;
             }
         }
+        throw new PathNotFoundException();
     }
 
-    public void rmdir(String path) throws NotADirectoryException, IllegalOperationException {
+    public void rmdir(String path) throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
             String[] directories = path.split("/");
             if (directories.length == 1) {
                 throw new IllegalOperationException();
             }
-            for (int i = 1; i < directories.length - 1; i++) {
+            for (int i = 2; i < directories.length - 1; i++) {
                 cd(directories[i]);
             }
             rmdir(directories[directories.length - 1]);
@@ -202,6 +202,7 @@ class FileSystem {
             if (child.getItem().getFileName().equals(dirs[dirs.length - 1])) {
                 if (!child.getItem().isFile()) {
                     currentNode.removeChild(i);
+                    currentNode = temp;
                     return;
                 } else {
                     throw new NotADirectoryException();
@@ -285,5 +286,9 @@ class NotADirectoryException extends Exception {
 }
 
 class IllegalOperationException extends Exception {
+
+}
+
+class PathNotFoundException extends Exception {
 
 }
