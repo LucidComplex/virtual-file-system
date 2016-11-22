@@ -49,4 +49,13 @@ public class FileSystemTest {
         fs.cd("/root/newFolder/anotherFolder");
         assertEquals("/root/newFolder/anotherFolder", fs.pwd());
     }
+
+    @Test
+    public void mkdirAbsolute() {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.mkdir("/root/newFolder/another");
+        List<String> listing = fs.ls("/root/newFolder");
+        assertTrue(listing.contains("another"));
+    }
 }
