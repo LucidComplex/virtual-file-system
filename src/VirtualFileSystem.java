@@ -118,12 +118,10 @@ class FileSystem {
             Node<FileObject> temp = currentNode;
             cd("/root");
             String[] directories = path.split("/");
-            if (directories.length > 1) {
-                for (int i = 1; i < directories.length - 1; i++) {
-                    cd(directories[i]);
-                }
-                mkdir(directories[directories.length - 1]);
+            for (int i = 1; i < directories.length - 1; i++) {
+                cd(directories[i]);
             }
+            mkdir(directories[directories.length - 1]);
             currentNode = temp;
         } else {
             Node<FileObject> temp = currentNode;
