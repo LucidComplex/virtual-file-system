@@ -96,4 +96,13 @@ public class FileSystemTest {
         List<String> dir = fs.ls("newFolder");
         assertFalse(dir.contains("another"));
     }
+
+    @Test
+    public void relativeCd() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.mkdir("newFolder/another");
+        fs.cd("newFolder/another");
+        assertEquals("/root/newFolder/another", fs.pwd());
+    }
 }
