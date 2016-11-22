@@ -69,11 +69,11 @@ class FileSystem {
         root.addChild(new FileObject(fileName));
     }
 
-    public FileObject get(String fileName) {
+    public String cat(String fileName) {
         List<Node<FileObject>> children = root.getChildren();
         for (Node<FileObject> child : children) {
             if (child.getItem().getFileName().equals(fileName)) {
-                return child.getItem();
+                return child.getItem().getContent();
             }
         }
         return null;
