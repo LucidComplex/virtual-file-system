@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -86,11 +87,33 @@ class FileSystem {
             dir.push(node.getItem().getFileName());
             node = node.getParent();
         }
-        StringBuilder builder = new StringBuilder("/");
+        StringBuilder builder = new StringBuilder();
         while (!dir.isEmpty()) {
+            builder.append("/");
             builder.append(dir.pop());
         }
         return builder.toString();
+    }
+
+    public void mkdir(String folderName) {
+        currentNode.addChild(new FileObject(folderName, FileObject.DIRECTORY));
+    }
+
+    public List<String> ls() {
+        List<String> listing = new ArrayList<>();
+        for (Node<FileObject> child : currentNode.getChildren()) {
+            listing.add(child.getItem().getFileName());
+        }
+        return listing;
+    }
+
+    public void cd(String folderName) {
+        for (Node<FileObject> child : currentNode.getChildren()) {
+            if (child.getItem().getFileName().equals(folderName)) {
+                currentNode = child;
+                return;
+            }
+        }
     }
 }
 
