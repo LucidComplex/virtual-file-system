@@ -166,10 +166,16 @@ class FileSystem {
             }
             rmdir(directories[directories.length - 1]);
             currentNode = temp;
+            return;
+        }
+        Node<FileObject> temp = currentNode;
+        String[] dirs = path.split("/");
+        for (int i = 0; i < dirs.length - 1; i++) {
+            cd(dirs[i]);
         }
         for (int i = 0; i < currentNode.getChildren().size(); i++) {
             Node<FileObject> child = currentNode.getChildren().get(i);
-            if (child.getItem().getFileName().equals(path)) {
+            if (child.getItem().getFileName().equals(dirs[dirs.length - 1])) {
                 if (!child.getItem().isFile()) {
                     currentNode.removeChild(i);
                     return;
@@ -178,6 +184,7 @@ class FileSystem {
                 }
             }
         }
+        currentNode = temp;
     }
 }
 
