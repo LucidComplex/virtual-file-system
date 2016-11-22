@@ -24,7 +24,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdir() {
+    public void mkdir() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         List<String> listing = fs.ls();
@@ -32,7 +32,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void changeDirectory() {
+    public void changeDirectory() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.cd("newFolder");
@@ -40,7 +40,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void changeDirAbsolute() {
+    public void changeDirAbsolute() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.cd("newFolder");
@@ -51,11 +51,18 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdirAbsolute() {
+    public void mkdirAbsolute() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
         List<String> listing = fs.ls("/root/newFolder");
         assertTrue(listing.contains("another"));
+    }
+
+    @Test(expected = NotADirectoryException.class)
+    public void changeDirectoryIntoFile() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.touch("File");
+        fs.cd("File");
     }
 }

@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +94,7 @@ class FileSystem {
         return builder.toString();
     }
 
-    public void mkdir(String path) {
+    public void mkdir(String path) throws NotADirectoryException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
             String[] directories = path.split("/");
@@ -118,7 +117,7 @@ class FileSystem {
         return listing;
     }
 
-    public List<String> ls(String path) {
+    public List<String> ls(String path) throws NotADirectoryException {
         Node<FileObject> temp = currentNode;
         cd(path);
         List<String> listing = ls();
@@ -126,18 +125,21 @@ class FileSystem {
         return listing;
     }
 
-    public void cd(String path) {
+    public void cd(String path) throws NotADirectoryException {
         if (path.startsWith("/root")) {
             String[] directories = path.split("/");
             if (directories.length == 1) {
                 currentNode = root;
             }
-            for (String dir : directories) {
-                cd(dir);
+            for (int i = 1; i < directories.length; i++) {
+                cd(directories[i]);
             }
         }
         for (Node<FileObject> child : currentNode.getChildren()) {
             if (child.getItem().getFileName().equals(path)) {
+                if (child.getItem().isFile()) {
+                    throw new NotADirectoryException();
+                }
                 currentNode = child;
                 return;
             }
@@ -211,4 +213,8 @@ class Node<T> {
     public T getItem() {
         return item;
     }
+}
+
+class NotADirectoryException extends Exception {
+
 }
