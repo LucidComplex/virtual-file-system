@@ -86,4 +86,14 @@ public class FileSystemTest {
         List<String> dir = fs.ls("newFolder");
         assertTrue(dir.contains("another"));
     }
+
+    @Test
+    public void relativeRmDir() throws NotADirectoryException, IllegalOperationException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.mkdir("newFolder/another");
+        fs.rmdir("newFolder/another");
+        List<String> dir = fs.ls("newFolder");
+        assertFalse(dir.contains("another"));
+    }
 }
