@@ -211,6 +211,28 @@ class FileSystem {
         }
         currentNode = temp;
     }
+
+    public void edit(String path, String content) throws NotADirectoryException, PathNotFoundException {
+        touch(path);
+        Node<FileObject> temp = currentNode;
+        String[] paths = path.split("/");
+        if (paths.length > 1) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+            cd(builder.toString());
+        }
+        List<Node<FileObject>> children = currentNode.getChildren();
+        for (Node<FileObject> child : children) {
+            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                child.getItem().appendContent(content);
+                currentNode = temp;
+                return;
+            }
+        }
+    }
+
 }
 
 class Node<T> {
