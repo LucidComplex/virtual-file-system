@@ -17,14 +17,6 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdir() throws NotADirectoryException {
-        FileSystem fs = new FileSystem();
-        fs.mkdir("newFolder");
-        List<String> listing = fs.ls();
-        assertTrue(listing.contains("newFolder"));
-    }
-
-    @Test
     public void changeDirectory() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
@@ -44,6 +36,30 @@ public class FileSystemTest {
     }
 
     @Test
+    public void relativeCd() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.mkdir("newFolder/another");
+        fs.cd("newFolder/another");
+        assertEquals("/root/newFolder/another", fs.pwd());
+    }
+
+    @Test(expected = NotADirectoryException.class)
+    public void changeDirectoryIntoFile() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.touch("File");
+        fs.cd("File");
+    }
+
+    @Test
+    public void mkdir() throws NotADirectoryException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        List<String> listing = fs.ls();
+        assertTrue(listing.contains("newFolder"));
+    }
+
+    @Test
     public void mkdirAbsolute() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
@@ -52,11 +68,13 @@ public class FileSystemTest {
         assertTrue(listing.contains("another"));
     }
 
-    @Test(expected = NotADirectoryException.class)
-    public void changeDirectoryIntoFile() throws NotADirectoryException {
+    @Test
+    public void relativeMkdir() throws NotADirectoryException {
         FileSystem fs = new FileSystem();
-        fs.touch("File");
-        fs.cd("File");
+        fs.mkdir("newFolder");
+        fs.mkdir("newFolder/another");
+        List<String> dir = fs.ls("newFolder");
+        assertTrue(dir.contains("another"));
     }
 
     @Test
@@ -79,15 +97,6 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeMkdir() throws NotADirectoryException {
-        FileSystem fs = new FileSystem();
-        fs.mkdir("newFolder");
-        fs.mkdir("newFolder/another");
-        List<String> dir = fs.ls("newFolder");
-        assertTrue(dir.contains("another"));
-    }
-
-    @Test
     public void relativeRmDir() throws NotADirectoryException, IllegalOperationException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
@@ -97,12 +106,4 @@ public class FileSystemTest {
         assertFalse(dir.contains("another"));
     }
 
-    @Test
-    public void relativeCd() throws NotADirectoryException {
-        FileSystem fs = new FileSystem();
-        fs.mkdir("newFolder");
-        fs.mkdir("newFolder/another");
-        fs.cd("newFolder/another");
-        assertEquals("/root/newFolder/another", fs.pwd());
-    }
 }
