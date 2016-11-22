@@ -17,7 +17,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void changeDirectory() throws NotADirectoryException {
+    public void changeDirectory() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.cd("newFolder");
@@ -25,7 +25,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void changeDirAbsolute() throws NotADirectoryException {
+    public void changeDirAbsolute() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.cd("newFolder");
@@ -36,7 +36,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeCd() throws NotADirectoryException {
+    public void relativeCd() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
@@ -45,14 +45,14 @@ public class FileSystemTest {
     }
 
     @Test(expected = NotADirectoryException.class)
-    public void changeDirectoryIntoFile() throws NotADirectoryException {
+    public void changeDirectoryIntoFile() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.touch("File");
         fs.cd("File");
     }
 
     @Test
-    public void mkdir() throws NotADirectoryException {
+    public void mkdir() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         List<String> listing = fs.ls();
@@ -60,7 +60,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdirAbsolute() throws NotADirectoryException {
+    public void mkdirAbsolute() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
@@ -69,7 +69,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeMkdir() throws NotADirectoryException {
+    public void relativeMkdir() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
@@ -77,8 +77,14 @@ public class FileSystemTest {
         assertTrue(dir.contains("another"));
     }
 
+    @Test(expected = PathNotFoundException.class)
+    public void mkdirNonExisting() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder/another");
+    }
+
     @Test
-    public void rmdir() throws NotADirectoryException, IllegalOperationException {
+    public void rmdir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.rmdir("newFolder");
@@ -87,7 +93,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteRmdir() throws NotADirectoryException, IllegalOperationException {
+    public void absoluteRmdir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
@@ -97,7 +103,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeRmDir() throws NotADirectoryException, IllegalOperationException {
+    public void relativeRmDir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
@@ -107,7 +113,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void touch() throws NotADirectoryException {
+    public void touch() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.touch("file");
         List<String> list = fs.ls();
@@ -115,7 +121,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void edit() throws NotADirectoryException {
+    public void edit() throws NotADirectoryException, PathNotFoundException {
         FileSystem fs = new FileSystem();
         fs.edit("test", "Hello World.");
         assertEquals("Hello World.", fs.cat("test"));
