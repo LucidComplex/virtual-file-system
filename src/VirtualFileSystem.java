@@ -142,6 +142,13 @@ class FileSystem {
             for (int i = 1; i < directories.length; i++) {
                 cd(directories[i]);
             }
+            return;
+        }
+        if (path.contains("/")) {
+            String[] dirs = path.split("/");
+            for (int i = 0; i < dirs.length; i++) {
+                cd(dirs[i]);
+            }
         }
         for (Node<FileObject> child : currentNode.getChildren()) {
             if (child.getItem().getFileName().equals(path)) {
