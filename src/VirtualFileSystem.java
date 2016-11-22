@@ -65,8 +65,27 @@ class FileSystem {
         currentNode = root;
     }
 
-    public void touch(String fileName) {
-        root.addChild(new FileObject(fileName));
+    public void touch(String path) throws NotADirectoryException {
+        if (path.startsWith("/root")) {
+            Node<FileObject> temp = currentNode;
+            cd("/root");
+            String[] paths = path.split("/");
+            if (paths.length > 1) {
+                for (int i = 1; i < paths.length - 1; i++) {
+                    cd(paths[i]);
+                }
+                currentNode.addChild(new FileObject(paths[paths.length - 1]));
+            }
+            currentNode = temp;
+        } else {
+            Node<FileObject> temp = currentNode;
+            String[] paths = path.split("/");
+            for (int i = 0; i < paths.length - 1; i++) {
+                cd(paths[i]);
+            }
+            currentNode.addChild(new FileObject(paths[paths.length - 1]));
+            currentNode = temp;
+        }
     }
 
     public String cat(String fileName) {
