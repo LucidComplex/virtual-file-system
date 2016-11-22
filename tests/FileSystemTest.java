@@ -15,8 +15,9 @@ public class FileSystemTest {
     }
 
     @Test
-    public void createDirectory() {
+    public void currentWorkingDir() {
         FileSystem fs = new FileSystem();
+        String pwd = fs.pwd();
+        assertEquals("/root", pwd);
     }
-
 }

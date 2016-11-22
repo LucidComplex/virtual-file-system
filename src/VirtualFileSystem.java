@@ -1,6 +1,7 @@
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Created by tan on 11/12/16.
@@ -57,9 +58,11 @@ class FileObject {
 
 class FileSystem {
     private Node<FileObject> root;
+    private Node<FileObject> currentNode;
 
     public FileSystem() {
-        root = new Node<>();
+        root = new Node<>(new FileObject("root", FileObject.DIRECTORY));
+        currentNode = root;
     }
 
     public void touch(String fileName) {
@@ -74,6 +77,20 @@ class FileSystem {
             }
         }
         return null;
+    }
+
+    public String pwd() {
+        Stack<String> dir = new Stack<>();
+        Node<FileObject> node = currentNode;
+        while (node != null) {
+            dir.push(node.getItem().getFileName());
+            node = node.getParent();
+        }
+        StringBuilder builder = new StringBuilder("/");
+        while (!dir.isEmpty()) {
+            builder.append(dir.pop());
+        }
+        return builder.toString();
     }
 }
 
