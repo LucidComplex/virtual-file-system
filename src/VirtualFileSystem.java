@@ -95,8 +95,19 @@ class FileSystem {
         return builder.toString();
     }
 
-    public void mkdir(String folderName) {
-        currentNode.addChild(new FileObject(folderName, FileObject.DIRECTORY));
+    public void mkdir(String path) {
+        if (path.startsWith("/root")) {
+            Node<FileObject> temp = currentNode;
+            String[] directories = path.split("/");
+            if (directories.length > 1) {
+                for (int i = 0; i < directories.length - 1; i++) {
+                    cd(directories[i]);
+                }
+                mkdir(directories[directories.length - 1]);
+            }
+            currentNode = temp;
+        }
+        currentNode.addChild(new FileObject(path, FileObject.DIRECTORY));
     }
 
     public List<String> ls() {
