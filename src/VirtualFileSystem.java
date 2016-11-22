@@ -146,7 +146,19 @@ class FileSystem {
         }
     }
 
-    public void rmdir(String path) throws NotADirectoryException {
+    public void rmdir(String path) throws NotADirectoryException, IllegalOperationException {
+        if (path.startsWith("/root")) {
+            Node<FileObject> temp = currentNode;
+            String[] directories = path.split("/");
+            if (directories.length == 1) {
+                throw new IllegalOperationException();
+            }
+            for (int i = 1; i < directories.length - 1; i++) {
+                cd(directories[i]);
+            }
+            rmdir(directories[directories.length - 1]);
+            currentNode = temp;
+        }
         for (int i = 0; i < currentNode.getChildren().size(); i++) {
             Node<FileObject> child = currentNode.getChildren().get(i);
             if (child.getItem().getFileName().equals(path)) {
