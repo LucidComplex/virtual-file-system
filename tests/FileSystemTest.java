@@ -1,5 +1,6 @@
 import org.junit.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -125,5 +126,20 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.edit("test", "Hello World.");
         assertEquals("Hello World.", fs.cat("test"));
+    }
+
+    @Test
+    public void absoluteEdit() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.edit("/root/test", "Hello World.");
+        assertEquals("Hello World.", fs.cat("test"));
+    }
+
+    @Test
+    public void rm() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.touch("newFile");
+        fs.rm("newFile");
+        assertEquals(0, fs.ls().size());
     }
 }

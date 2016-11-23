@@ -71,7 +71,7 @@ class FileSystem {
             cd("/root");
             String[] paths = path.split("/");
             if (paths.length > 1) {
-                for (int i = 1; i < paths.length - 1; i++) {
+                for (int i = 2; i < paths.length - 1; i++) {
                     cd(paths[i]);
                 }
                 currentNode.addChild(new FileObject(paths[paths.length - 1]));
@@ -216,9 +216,13 @@ class FileSystem {
         touch(path);
         Node<FileObject> temp = currentNode;
         String[] paths = path.split("/");
-        if (paths.length > 1) {
+
+        if (paths.length > 3) {
             StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < paths.length - 1; i++) {
+            if (path.startsWith("/root")) {
+                currentNode = root;
+            }
+            for (int i = 2; i < paths.length - 1; i++) {
                 builder.append(paths[i]);
             }
             cd(builder.toString());
@@ -231,8 +235,12 @@ class FileSystem {
                 return;
             }
         }
+        currentNode = temp;
     }
 
+    public void rm(String path) {
+
+    }
 }
 
 class Node<T> {
