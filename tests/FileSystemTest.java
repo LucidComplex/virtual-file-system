@@ -133,6 +133,18 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.edit("/root/test", "Hello World.");
         assertEquals("Hello World.", fs.cat("test"));
+        fs.mkdir("new");
+        fs.edit("/root/new/test", "Testing");
+        assertEquals(1, fs.ls("/root/new").size());
+        assertEquals("Testing", fs.cat("/root/new/test"));
+    }
+
+    @Test
+    public void relativeEdit() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("newFolder");
+        fs.edit("newFolder/test", "Hello World.");
+        assertEquals("Hello World.", fs.cat("newFolder/test"));
     }
 
     @Test

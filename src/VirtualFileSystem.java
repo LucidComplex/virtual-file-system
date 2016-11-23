@@ -88,13 +88,28 @@ class FileSystem {
         }
     }
 
-    public String cat(String fileName) {
-        List<Node<FileObject>> children = root.getChildren();
+    public String cat(String path) throws NotADirectoryException, PathNotFoundException {
+        Node<FileObject> temp = currentNode;
+        String[] paths = path.split("/");
+        StringBuilder builder = new StringBuilder();
+        if (path.startsWith("/")) {
+            for (int i = 2; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        } else {
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        }
+        cd(builder.toString());
+        List<Node<FileObject>> children = currentNode.getChildren();
         for (Node<FileObject> child : children) {
-            if (child.getItem().getFileName().equals(fileName)) {
+            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                currentNode = temp;
                 return child.getItem().getContent();
             }
         }
+        currentNode = temp;
         return null;
     }
 
@@ -151,6 +166,9 @@ class FileSystem {
     }
 
     public void cd(String path) throws NotADirectoryException, PathNotFoundException {
+        if (path.trim().length() == 0) {
+            return;
+        }
         if (path.startsWith("/root")) {
             String[] directories = path.split("/");
             currentNode = root;
@@ -216,17 +234,18 @@ class FileSystem {
         touch(path);
         Node<FileObject> temp = currentNode;
         String[] paths = path.split("/");
-
-        if (paths.length > 3) {
-            StringBuilder builder = new StringBuilder();
-            if (path.startsWith("/root")) {
-                currentNode = root;
-            }
+        StringBuilder builder = new StringBuilder();
+        if (path.startsWith("/")) {
             for (int i = 2; i < paths.length - 1; i++) {
                 builder.append(paths[i]);
             }
-            cd(builder.toString());
+        } else {
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
         }
+        cd(builder.toString());
+
         List<Node<FileObject>> children = currentNode.getChildren();
         for (Node<FileObject> child : children) {
             if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
