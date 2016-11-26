@@ -54,6 +54,10 @@ class FileObject {
     public void appendContent(String text) {
         content += text;
     }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }
 
 class FileSystem {
@@ -279,6 +283,48 @@ class FileSystem {
         }
         currentNode = temp;
     }
+
+    public void mv(String before, String after) throws NotADirectoryException, PathNotFoundException {
+        Node<FileObject> temp = currentNode;
+        String[] paths = before.split("/");
+        StringBuilder builder = new StringBuilder();
+        if (before.startsWith("/")) {
+            for (int i = 2; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        } else {
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        }
+        cd(builder.toString());
+
+        List<Node<FileObject>> children = currentNode.getChildren();
+        Node<FileObject> toMove = null;
+        for (Node<FileObject> child : children) {
+            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                toMove = child;
+            }
+        }
+        if (toMove != null) {
+            paths = after.split("/");
+            builder = new StringBuilder();
+            if (after.startsWith("/")) {
+                for (int i = 2; i < paths.length - 1; i++) {
+                    builder.append(paths[i]);
+                }
+            } else {
+                for (int i = 0; i < paths.length - 1; i++) {
+                    builder.append(paths[i]);
+                }
+            }
+            cd(builder.toString());
+            toMove.remove();
+            toMove.setParent(currentNode);
+            currentNode.addChild(toMove);
+        }
+        currentNode = temp;
+    }
 }
 
 class Node<T> {
@@ -356,6 +402,15 @@ class Node<T> {
                 }
             }
         }
+    }
+
+
+    public void setParent(Node<T> parent) {
+        this.parent = parent;
+    }
+
+    public void addChild(Node<T> toMove) {
+        children.add(toMove);
     }
 }
 
