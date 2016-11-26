@@ -173,4 +173,15 @@ public class FileSystemTest {
         List<String> listing = fs.ls("folder");
         assertTrue(listing.contains("testFile"));
     }
+
+    @Test
+    public void absoluteMove() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.touch("testFile");
+        fs.mkdir("folder");
+        fs.mv("/root/testFile", "/root/folder/testFile");
+        assertEquals(1, fs.ls().size());
+        List<String> listing = fs.ls("folder");
+        assertTrue(listing.contains("testFile"));
+    }
 }
