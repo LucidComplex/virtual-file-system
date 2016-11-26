@@ -257,8 +257,27 @@ class FileSystem {
         currentNode = temp;
     }
 
-    public void rm(String path) {
-
+    public void rm(String path) throws NotADirectoryException, PathNotFoundException {
+        Node<FileObject> temp = currentNode;
+        String[] paths = path.split("/");
+        StringBuilder builder = new StringBuilder();
+        if (path.startsWith("/")) {
+            for (int i = 2; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        } else {
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        }
+        cd(builder.toString());
+        List<Node<FileObject>> children = currentNode.getChildren();
+        for (Node<FileObject> child : children) {
+            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                child.remove();
+            }
+        }
+        currentNode = temp;
     }
 }
 
