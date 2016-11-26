@@ -325,6 +325,33 @@ class FileSystem {
         }
         currentNode = temp;
     }
+
+    public void rn(String before, String after) throws NotADirectoryException, PathNotFoundException, IllegalOperationException {
+        if (after.contains("/")) {
+            throw new IllegalOperationException();
+        }
+        Node<FileObject> temp = currentNode;
+        String[] paths = before.split("/");
+        StringBuilder builder = new StringBuilder();
+        if (before.startsWith("/")) {
+            for (int i = 2; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        } else {
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        }
+        cd(builder.toString());
+
+        List<Node<FileObject>> children = currentNode.getChildren();
+        for (Node<FileObject> child : children) {
+            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                child.getItem().setFileName(after);
+            }
+        }
+        currentNode = temp;
+    }
 }
 
 class Node<T> {

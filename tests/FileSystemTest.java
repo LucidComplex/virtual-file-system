@@ -184,4 +184,15 @@ public class FileSystemTest {
         List<String> listing = fs.ls("folder");
         assertTrue(listing.contains("testFile"));
     }
+
+    @Test
+    public void rename() throws NotADirectoryException, PathNotFoundException, IllegalOperationException {
+        FileSystem fs = new FileSystem();
+        fs.touch("testFile");
+        fs.mkdir("folder");
+        fs.rn("/root/testFile", "testingFile");
+        List<String> listing = fs.ls();
+        assertFalse(listing.contains("testFile"));
+        assertTrue(listing.contains("testingFile"));
+    }
 }
