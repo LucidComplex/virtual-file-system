@@ -56,4 +56,12 @@ public class NodeTest {
         assertEquals("test", childNode.getItem());
         assertNull(testNode.getChild("wala"));
     }
+
+    @Test
+    public void removeSelf() {
+        Node<String> testNode = new Node<>();
+        testNode.addChild("Another testing");
+        testNode.getChild(0).remove();
+        assertEquals(0, testNode.getChildren().size());
+    }
 }

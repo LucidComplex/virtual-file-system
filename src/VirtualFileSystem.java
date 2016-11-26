@@ -328,6 +328,16 @@ class Node<T> {
     public T getItem() {
         return item;
     }
+
+    public void remove() {
+        if (parent != null) {
+            for (int i = 0; i < parent.children.size(); i++) {
+                if (parent.children.get(i).equals(this)) {
+                    parent.removeChild(i);
+                }
+            }
+        }
+    }
 }
 
 class NotADirectoryException extends Exception {
