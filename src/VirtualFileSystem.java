@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -77,7 +79,7 @@ class FileObject implements Serializable, Comparable<FileObject> {
     }
 }
 
-class FileSystem {
+class FileSystem implements Serializable {
     private Node<FileObject> root;
     private Node<FileObject> currentNode;
 
@@ -591,6 +593,30 @@ class Utilities {
         }
         return null;
     }
+
+    public static void serialize(FileSystem fileSystem) {
+        try {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
+            objectOut.writeObject(fileSystem);
+            FileOutputStream outFile = new FileOutputStream("disk");
+            outFile.write(byteOut.toByteArray());
+            outFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static FileSystem deserialize() {
+        try {
+            ByteArrayInputStream byteIn = new ByteArrayInputStream(Files.readAllBytes(new File("disk").toPath()));
+            ObjectInputStream objectIn = new ObjectInputStream(byteIn);
+            return (FileSystem) objectIn.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 
 class Console extends JFrame {
@@ -601,7 +627,10 @@ class Console extends JFrame {
     private FileSystem fileSystem;
     Console() {
         super("Console");
-        fileSystem = new FileSystem();
+        fileSystem = Utilities.deserialize();
+        if (fileSystem == null) {
+            fileSystem = new FileSystem();
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(600, 400));
         getContentPane().setBackground(Color.BLACK);
@@ -716,6 +745,12 @@ class Console extends JFrame {
             }
         });
 
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                Utilities.serialize(fileSystem);
+            }
+        });
         pack();
         setVisible(true);
     }
