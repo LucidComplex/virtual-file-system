@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -650,13 +651,12 @@ class Console extends JFrame {
                 args = args.trim();
                 String[] split;
                 try {
-                    resultsArea.append(fileSystem.pwd() + " > " + command);
-                    resultsArea.append("\n");
+                    println(fileSystem.pwd() + " > " + command);
                     switch (exec) {
                         case "ls":
                             List<String> listing = fileSystem.ls(args);
                             for (String path : listing) {
-                                resultsArea.append(path + "\n");
+                                println(path);
                             }
                             break;
                         case "touch":
@@ -692,23 +692,36 @@ class Console extends JFrame {
                             break;
                         case "show":
                             String out = fileSystem.cat(args);
-                            resultsArea.append(out);
+                            println(out);
                             break;
                         default:
                             resultsArea.append("Unrecognized command.");
                     }
                     resultsArea.append("\n");
                 } catch (NotADirectoryException e) {
-                    resultsArea.append("Not a directory.\n");
+                    println(exec + ": " + args + ": not a directory");
+                } catch (PathNotFoundException e) {
+                    println(exec + ": " + args + ": no such file or directory");
+                } catch (FileExistsException e) {
+                    println(exec + ": " + args + ": file exists");
                 } catch (Exception e) {
-                    resultsArea.append("\n");
+                    println(exec + ": " + args + ": unexpected error occurred");
                     e.printStackTrace();
+                }
+                try {
+                    resultsArea.scrollRectToVisible(resultsArea.modelToView(resultsArea.getDocument().getLength()));
+                } catch (BadLocationException e) {
+                    throw new RuntimeException();
                 }
             }
         });
 
         pack();
         setVisible(true);
+    }
+    private void println(String message) {
+        resultsArea.append(message);
+        resultsArea.append("\n");
     }
     public static void main(String[] args) {
         Console console = new Console();
