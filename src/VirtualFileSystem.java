@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -571,19 +573,22 @@ class Console extends JFrame {
     private JLabel workingDirectoryLabel;
     private JTextField commandTextField;
     private JTextArea resultsArea;
+
+    private FileSystem fileSystem;
     Console() {
         super("Console");
+        fileSystem = new FileSystem();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(600, 400));
         getContentPane().setBackground(Color.BLACK);
 
         // init scroll pane
-        resultsArea = new JTextArea("abcdefghijklmnopqrstuvwxyz");
-        resultsArea.setBackground(Color.GRAY);
+        resultsArea = new JTextArea();
+        resultsArea.setBackground(Color.BLACK);
         resultsArea.setLineWrap(true);
-        resultsArea.setPreferredSize(new Dimension(680, 350));
         resultsArea.setEnabled(false);
         JScrollPane resultsPane = new JScrollPane(resultsArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        resultsPane.setBorder(null);
         getContentPane().add(resultsPane);
 
         // init text input and current dir
@@ -605,8 +610,78 @@ class Console extends JFrame {
         commandTextField.setBackground(Color.BLACK);
         commandTextField.setBorder(null);
         textPanel.add(commandTextField, c);
+        commandTextField.grabFocus();
         getContentPane().add(textPanel, BorderLayout.SOUTH);
 
+        // set event handlers
+        commandTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String command = commandTextField.getText();
+                commandTextField.setText("");
+                String[] tokens = command.split(" ");
+                String exec = tokens[0];
+                String args = "";
+                for (int i = 1; i < tokens.length; i++) {
+                    args += tokens[i];
+                }
+                String[] split;
+                try {
+                    resultsArea.append(fileSystem.pwd() + " > " + command);
+                    resultsArea.append("\n");
+                    switch (exec) {
+                        case "ls":
+                            List<String> listing = fileSystem.ls(args);
+                            for (String path : listing) {
+                                resultsArea.append(path + "\n");
+                            }
+                            break;
+                        case "touch":
+                            fileSystem.touch(args);
+                            break;
+                        case "cd":
+                            fileSystem.cd(args);
+                            workingDirectoryLabel.setText(fileSystem.pwd());
+                            break;
+                        case "mkdir":
+                            fileSystem.mkdir(args);
+                            break;
+                        case "rmdir":
+                            fileSystem.rmdir(args);
+                            break;
+                        case "rm":
+                            fileSystem.rm(args);
+                            break;
+                        case "rn":
+                            split = args.split(" ");
+                            fileSystem.rn(split[0], split[1]);
+                            break;
+                        case "mv":
+                            split = args.split(" ");
+                            fileSystem.mv(split[0], split[1]);
+                            break;
+                        case "cp":
+                            split = args.split(" ");
+                            fileSystem.cp(split[0], split[1]);
+                            break;
+                        case "whereis":
+                            fileSystem.whereis(args);
+                            break;
+                        case "show":
+                            String out = fileSystem.cat(args);
+                            resultsArea.append(out);
+                            break;
+                        default:
+                            resultsArea.append("Unrecognized command.");
+                    }
+                    resultsArea.append("\n");
+                } catch (Exception e) {
+                    resultsArea.append(fileSystem.pwd() + " > " + command);
+                    resultsArea.append("\n");
+                    e.printStackTrace();
+                }
+            }
+        });
 
         pack();
         setVisible(true);
