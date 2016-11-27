@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Stack;
 public class VirtualFileSystem {
 }
 
-class FileObject {
+class FileObject implements Serializable {
     public static final int DIRECTORY = 0;
     public static final int FILE = 1;
     private String fileName;
@@ -362,12 +363,14 @@ class FileSystem {
             }
         }
         if (sourceNode != null) {
-            currentNode.addChild(new Node<FileObject>(sourceNode));
+            Node<FileObject> copy = (Node<FileObject>) Utilities.clone(sourceNode);
+            copy.getItem().setFileName(target);
+            currentNode.addChild(copy);
         }
     }
 }
 
-class Node<T> {
+class Node<T> implements Serializable {
     private T item;
     private Node<T> parent;
     private List<Node<T>> children;
@@ -462,6 +465,24 @@ class Node<T> {
 
     public void addChild(Node<T> child) {
         children.add(child);
+    }
+}
+
+class Utilities {
+    public static Object clone(Object object) {
+        try {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
+            objectOut.writeObject(object);
+            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+            ObjectInputStream objectIn = new ObjectInputStream(byteIn);
+            return objectIn.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
