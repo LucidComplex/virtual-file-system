@@ -153,7 +153,7 @@ class FileSystem {
         return buildPath(currentNode);
     }
 
-    public void mkdir(String path) throws NotADirectoryException, PathNotFoundException {
+    public void mkdir(String path) throws NotADirectoryException, PathNotFoundException, FileExistsException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
             cd("/root");
@@ -168,6 +168,11 @@ class FileSystem {
             String[] dirs = path.split("/");
             for (int i = 0; i < dirs.length - 1; i++) {
                 cd(dirs[i]);
+            }
+            for (Node<FileObject> child : currentNode.getChildren()) {
+                if (child.getItem().getFileName().equals(dirs[dirs.length - 1])) {
+                    throw new FileExistsException();
+                }
             }
             currentNode.addChild(new FileObject(dirs[dirs.length - 1], FileObject.DIRECTORY));
             currentNode = temp;
@@ -700,5 +705,9 @@ class IllegalOperationException extends Exception {
 }
 
 class PathNotFoundException extends Exception {
+
+}
+
+class FileExistsException extends Exception {
 
 }

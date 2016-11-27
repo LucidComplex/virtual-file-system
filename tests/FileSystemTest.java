@@ -17,7 +17,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void changeDirectory() throws NotADirectoryException, PathNotFoundException {
+    public void changeDirectory() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.cd("newFolder");
@@ -25,7 +25,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void changeDirAbsolute() throws NotADirectoryException, PathNotFoundException {
+    public void changeDirAbsolute() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.cd("newFolder");
@@ -36,7 +36,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeCd() throws NotADirectoryException, PathNotFoundException {
+    public void relativeCd() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
@@ -52,7 +52,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdir() throws NotADirectoryException, PathNotFoundException {
+    public void mkdir() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         List<String> listing = fs.ls();
@@ -60,7 +60,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdirAbsolute() throws NotADirectoryException, PathNotFoundException {
+    public void mkdirAbsolute() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
@@ -69,7 +69,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeMkdir() throws NotADirectoryException, PathNotFoundException {
+    public void relativeMkdir() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
@@ -78,13 +78,13 @@ public class FileSystemTest {
     }
 
     @Test(expected = PathNotFoundException.class)
-    public void mkdirNonExisting() throws NotADirectoryException, PathNotFoundException {
+    public void mkdirNonExisting() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder/another");
     }
 
     @Test
-    public void rmdir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
+    public void rmdir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.rmdir("newFolder");
@@ -93,7 +93,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteRmdir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
+    public void absoluteRmdir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
@@ -103,7 +103,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeRmDir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException {
+    public void relativeRmDir() throws NotADirectoryException, IllegalOperationException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
@@ -128,7 +128,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteEdit() throws NotADirectoryException, PathNotFoundException {
+    public void absoluteEdit() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.edit("/root/test", "Hello World.");
         assertEquals("Hello World.", fs.cat("test"));
@@ -139,7 +139,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void relativeEdit() throws NotADirectoryException, PathNotFoundException {
+    public void relativeEdit() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         fs.edit("newFolder/test", "Hello World.");
@@ -155,7 +155,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteRm() throws NotADirectoryException, PathNotFoundException {
+    public void absoluteRm() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("another");
         fs.touch("another/newFile");
@@ -164,7 +164,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void move() throws NotADirectoryException, PathNotFoundException {
+    public void move() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
@@ -175,7 +175,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteMove() throws NotADirectoryException, PathNotFoundException {
+    public void absoluteMove() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
@@ -186,7 +186,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void rename() throws NotADirectoryException, PathNotFoundException, IllegalOperationException {
+    public void rename() throws NotADirectoryException, PathNotFoundException, IllegalOperationException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
@@ -205,7 +205,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteCopy() throws NotADirectoryException, PathNotFoundException {
+    public void absoluteCopy() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("test");
         fs.mkdir("folder");
@@ -225,7 +225,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void cdWithDot() throws NotADirectoryException, PathNotFoundException {
+    public void cdWithDot() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("folder");
         fs.cd("/root/folder");
@@ -239,7 +239,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void mkdirWithDot() throws NotADirectoryException, PathNotFoundException {
+    public void mkdirWithDot() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.mkdir("folder");
         fs.cd("folder");
@@ -249,7 +249,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void whereis() throws NotADirectoryException, PathNotFoundException {
+    public void whereis() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("outside");
         fs.mkdir("folder");
@@ -261,4 +261,10 @@ public class FileSystemTest {
         assertTrue(paths.contains("/root/folder/inside"));
     }
 
+    @Test(expected = FileExistsException.class)
+    public void mkdirMultiple() throws NotADirectoryException, PathNotFoundException, FileExistsException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("papa");
+        fs.mkdir("papa");
+    }
 }
