@@ -203,4 +203,13 @@ public class FileSystemTest {
         fs.cp("test", "test2");
         assertTrue(fs.ls().contains("test2") && fs.ls().contains("test"));
     }
+
+    @Test
+    public void absoluteCopy() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.touch("test");
+        fs.mkdir("folder");
+        fs.cp("/root/test", "/root/folder/test2");
+        assertTrue(fs.ls("folder").contains("test2") && fs.ls().contains("test"));
+    }
 }
