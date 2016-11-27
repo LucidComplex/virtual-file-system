@@ -343,19 +343,45 @@ class FileSystem {
         currentNode = temp;
     }
 
-    public void cp(String source, String target) {
+    public void cp(String source, String target) throws NotADirectoryException, PathNotFoundException {
+        Node<FileObject> temp = currentNode;
+        String[] paths = source.split("/");
+        StringBuilder builder = new StringBuilder();
+        if (source.startsWith("/")) {
+            for (int i = 2; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        } else {
+            for (int i = 0; i < paths.length - 1; i++) {
+                builder.append(paths[i]);
+            }
+        }
+        cd(builder.toString());
         Node<FileObject> sourceNode = null;
         for (Node<FileObject> child : currentNode.getChildren()) {
-            if (child.getItem().getFileName().equals(source)) {
+            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
                 sourceNode = child;
                 break;
             }
         }
         if (sourceNode != null) {
             Node<FileObject> copy = (Node<FileObject>) Utilities.clone(sourceNode);
-            copy.getItem().setFileName(target);
+            builder = new StringBuilder();
+            paths = target.split("/");
+            if (target.startsWith("/")) {
+                for (int i = 2; i < paths.length - 1; i++) {
+                    builder.append(paths[i]);
+                }
+            } else {
+                for (int i = 0; i < paths.length - 1; i++) {
+                    builder.append(paths[i]);
+                }
+            }
+            cd(builder.toString());
+            copy.getItem().setFileName(paths[paths.length - 1]);
             currentNode.addChild(copy);
         }
+        currentNode = temp;
     }
 }
 
