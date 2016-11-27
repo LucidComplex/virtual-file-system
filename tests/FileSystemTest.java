@@ -223,4 +223,42 @@ public class FileSystemTest {
         assertEquals(2, listing.size());
         assertTrue(listing.contains("test.doc") && listing.contains("wow.doc"));
     }
+
+    @Test
+    public void cdWithDot() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("folder");
+        fs.cd("/root/folder");
+        fs.cd("..");
+        assertEquals("/root", fs.pwd());
+
+        fs.mkdir("folder/another");
+        fs.cd("/root/folder/another");
+        fs.cd("../../");
+        assertEquals("/root", fs.pwd());
+    }
+
+    @Test
+    public void mkdirWithDot() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("folder");
+        fs.cd("folder");
+        fs.mkdir("../another");
+        List<String> listing = fs.ls("/root");
+        assertTrue(listing.contains("another"));
+    }
+
+    @Test
+    public void whereis() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.touch("outside");
+        fs.mkdir("folder");
+        fs.touch("folder/inside");
+        fs.mkdir("another");
+        fs.touch("another/inside");
+        List<String> paths = fs.whereis("inside");
+        assertEquals(2, paths.size());
+        assertTrue(paths.contains("/root/folder/inside"));
+    }
+
 }

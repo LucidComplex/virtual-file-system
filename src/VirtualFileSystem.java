@@ -430,6 +430,23 @@ class FileSystem {
         }
         currentNode = temp;
     }
+
+    public List<String> whereis(String fileName) {
+        List<String> foundItems = new ArrayList<>();
+        Stack<Node<FileObject>> frontier = new Stack<>();
+        frontier.push(root);
+        Node<FileObject> head = null;
+        while (!frontier.isEmpty()) {
+            head = frontier.pop();
+            for (Node<FileObject> child : head.getChildren()) {
+                frontier.push(child);
+            }
+            if (head.getItem().getFileName().equals(fileName)) {
+                foundItems.add(buildPath(head));
+            }
+        }
+        return foundItems;
+    }
 }
 
 class Node<T extends Comparable<T>> implements Serializable {
