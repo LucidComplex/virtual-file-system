@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -562,6 +564,55 @@ class Utilities {
             e.printStackTrace();
         }
         return null;
+    }
+}
+
+class Console extends JFrame {
+    private JLabel workingDirectoryLabel;
+    private JTextField commandTextField;
+    private JTextArea resultsArea;
+    Console() {
+        super("Console");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(600, 400));
+        getContentPane().setBackground(Color.BLACK);
+
+        // init scroll pane
+        resultsArea = new JTextArea("abcdefghijklmnopqrstuvwxyz");
+        resultsArea.setBackground(Color.GRAY);
+        resultsArea.setLineWrap(true);
+        resultsArea.setPreferredSize(new Dimension(680, 350));
+        resultsArea.setEnabled(false);
+        JScrollPane resultsPane = new JScrollPane(resultsArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        getContentPane().add(resultsPane);
+
+        // init text input and current dir
+        JPanel textPanel = new JPanel(new GridBagLayout());
+        textPanel.setBackground(Color.BLACK);
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        workingDirectoryLabel = new JLabel("/root > ");
+        c.weightx = 0.08;
+        workingDirectoryLabel.setForeground(Color.WHITE);
+        textPanel.add(workingDirectoryLabel, c);
+        c.weightx = 1 - c.weightx;
+        c.gridx = 1;
+        c.gridy = 0;
+        commandTextField = new JTextField();
+        commandTextField.setForeground(Color.WHITE);
+        commandTextField.setBackground(Color.BLACK);
+        commandTextField.setBorder(null);
+        textPanel.add(commandTextField, c);
+        getContentPane().add(textPanel, BorderLayout.SOUTH);
+
+
+        pack();
+        setVisible(true);
+    }
+    public static void main(String[] args) {
+        Console console = new Console();
     }
 }
 
