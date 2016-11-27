@@ -56,7 +56,7 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.mkdir("newFolder");
         List<String> listing = fs.ls();
-        assertTrue(listing.contains("newFolder"));
+        assertEquals(1, listing.size());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class FileSystemTest {
         fs.mkdir("newFolder");
         fs.mkdir("/root/newFolder/another");
         List<String> listing = fs.ls("/root/newFolder");
-        assertTrue(listing.contains("another"));
+        assertEquals(1, listing.size());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class FileSystemTest {
         fs.mkdir("newFolder");
         fs.mkdir("newFolder/another");
         List<String> dir = fs.ls("newFolder");
-        assertTrue(dir.contains("another"));
+        assertEquals(1, dir.size());
     }
 
     @Test(expected = PathNotFoundException.class)
@@ -89,7 +89,7 @@ public class FileSystemTest {
         fs.mkdir("newFolder");
         fs.rmdir("newFolder");
         List<String> dir = fs.ls();
-        assertFalse(dir.contains("newFolder"));
+        assertEquals(0, dir.size());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class FileSystemTest {
         fs.mkdir("/root/newFolder/another");
         fs.rmdir("/root/newFolder/another");
         List<String> dir = fs.ls("/root/newFolder");
-        assertFalse(dir.contains("another"));
+        assertEquals(0, dir.size());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class FileSystemTest {
         fs.mkdir("newFolder/another");
         fs.rmdir("newFolder/another");
         List<String> dir = fs.ls("newFolder");
-        assertFalse(dir.contains("another"));
+        assertEquals(0, dir.size());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.touch("file");
         List<String> list = fs.ls();
-        assertTrue(list.contains("file"));
+        assertEquals(1, list.size());
     }
 
     @Test
@@ -171,7 +171,7 @@ public class FileSystemTest {
         fs.mv("testFile", "folder");
         assertEquals(1, fs.ls().size());
         List<String> listing = fs.ls("folder");
-        assertTrue(listing.contains("testFile"));
+        assertEquals(1, listing.size());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class FileSystemTest {
         fs.mv("/root/testFile", "/root/folder");
         assertEquals(1, fs.ls().size());
         List<String> listing = fs.ls("folder");
-        assertTrue(listing.contains("testFile"));
+        assertEquals(1, listing.size());
     }
 
     @Test
@@ -192,8 +192,7 @@ public class FileSystemTest {
         fs.mkdir("folder");
         fs.rn("/root/testFile", "testingFile");
         List<String> listing = fs.ls();
-        assertFalse(listing.contains("testFile"));
-        assertTrue(listing.contains("testingFile"));
+        assertEquals(2, listing.size());
     }
 
     @Test
@@ -201,7 +200,7 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.touch("test");
         fs.cp("test", "test2");
-        assertTrue(fs.ls().contains("test2") && fs.ls().contains("test"));
+        assertEquals(2, fs.ls().size());
     }
 
     @Test
@@ -210,7 +209,8 @@ public class FileSystemTest {
         fs.touch("test");
         fs.mkdir("folder");
         fs.cp("/root/test", "/root/folder/test2");
-        assertTrue(fs.ls("folder").contains("test2") && fs.ls().contains("test"));
+        assertEquals(1, fs.ls("folder").size());
+        assertEquals(2, fs.ls().size());
     }
 
     @Test
@@ -221,7 +221,6 @@ public class FileSystemTest {
         fs.touch("amazing.txt");
         List<String> listing = fs.ls("/root/*.doc");
         assertEquals(2, listing.size());
-        assertTrue(listing.contains("test.doc") && listing.contains("wow.doc"));
     }
 
     @Test
@@ -245,7 +244,7 @@ public class FileSystemTest {
         fs.cd("folder");
         fs.mkdir("../another");
         List<String> listing = fs.ls("/root");
-        assertTrue(listing.contains("another"));
+        assertEquals(2, listing.size());
     }
 
     @Test

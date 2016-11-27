@@ -220,6 +220,7 @@ class FileSystem {
             listing.removeIf(new Predicate<String>() {
                 @Override
                 public boolean test(String s) {
+                    s = s.substring(0, s.indexOf(" - "));
                     String regex = paths[paths.length - 1]; // *.doc
                     regex = regex.replaceAll("\\.", "\\\\.");
                     regex = regex.replaceAll("\\*", ".*");
