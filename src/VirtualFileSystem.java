@@ -3,10 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Predicate;
 
 /**
@@ -26,7 +24,7 @@ class FileObject implements Serializable, Comparable<FileObject> {
     public FileObject(String fileName, int FILE_TYPE) {
         this.fileName = fileName;
         this.creationTime = System.currentTimeMillis();
-        content = new String();
+        content = "";
         switch (FILE_TYPE) {
             case FILE:
                 isFile = true;
@@ -87,7 +85,7 @@ class FileSystem {
         currentNode = root;
     }
 
-    public void touch(String path) throws NotADirectoryException, PathNotFoundException {
+    public void touch(String path) throws NotADirectoryException, PathNotFoundException, FileExistsException {
         if (path.startsWith("/root")) {
             Node<FileObject> temp = currentNode;
             cd("/root");
@@ -95,6 +93,12 @@ class FileSystem {
             if (paths.length > 1) {
                 for (int i = 2; i < paths.length - 1; i++) {
                     cd(paths[i]);
+                }
+                for (Node<FileObject> child : currentNode.getChildren()) {
+                    if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                        currentNode = temp;
+                        throw new FileExistsException();
+                    }
                 }
                 currentNode.addChild(new FileObject(paths[paths.length - 1]));
             }
@@ -104,6 +108,12 @@ class FileSystem {
             String[] paths = path.split("/");
             for (int i = 0; i < paths.length - 1; i++) {
                 cd(paths[i]);
+            }
+            for (Node<FileObject> child : currentNode.getChildren()) {
+                if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                    currentNode = temp;
+                    throw new FileExistsException();
+                }
             }
             currentNode.addChild(new FileObject(paths[paths.length - 1]));
             currentNode = temp;
@@ -171,6 +181,7 @@ class FileSystem {
             }
             for (Node<FileObject> child : currentNode.getChildren()) {
                 if (child.getItem().getFileName().equals(dirs[dirs.length - 1])) {
+                    currentNode = temp;
                     throw new FileExistsException();
                 }
             }
@@ -182,7 +193,8 @@ class FileSystem {
     public List<String> ls() {
         List<String> listing = new ArrayList<>();
         for (Node<FileObject> child : currentNode.getChildren()) {
-            listing.add(child.getItem().getFileName());
+            listing.add(child.getItem().getFileName() + " - " + (child.getItem().isFile() ? "File" : "Directory") +
+                    " - Date Created: " + new Date(child.getItem().getCreationTime()).toString());
         }
         return listing;
     }
@@ -284,6 +296,7 @@ class FileSystem {
                     currentNode = temp;
                     return;
                 } else {
+                    currentNode = temp;
                     throw new NotADirectoryException();
                 }
             }
@@ -291,7 +304,7 @@ class FileSystem {
         currentNode = temp;
     }
 
-    public void edit(String path, String content) throws NotADirectoryException, PathNotFoundException {
+    public void edit(String path, String content) throws NotADirectoryException, PathNotFoundException, FileExistsException {
         touch(path);
         Node<FileObject> temp = currentNode;
         String[] paths = path.split("/");
@@ -318,7 +331,7 @@ class FileSystem {
         currentNode = temp;
     }
 
-    public void rm(String path) throws NotADirectoryException, PathNotFoundException {
+    public void rm(String path) throws NotADirectoryException, PathNotFoundException, NotAFileException {
         Node<FileObject> temp = currentNode;
         String[] paths = path.split("/");
         StringBuilder builder = new StringBuilder();
@@ -335,6 +348,10 @@ class FileSystem {
         List<Node<FileObject>> children = currentNode.getChildren();
         for (Node<FileObject> child : children) {
             if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+                if (!child.getItem().isFile()) {
+                    currentNode = temp;
+                    throw new NotAFileException();
+                }
                 child.remove();
             }
         }
@@ -609,7 +626,6 @@ class Console extends JFrame {
         textPanel.add(workingDirectoryLabel, c);
         c.weightx = 1 - c.weightx;
         c.gridx = 1;
-        c.gridy = 0;
         commandTextField = new JTextField();
         commandTextField.setForeground(Color.WHITE);
         commandTextField.setBackground(Color.BLACK);
@@ -628,8 +644,9 @@ class Console extends JFrame {
                 String exec = tokens[0];
                 String args = "";
                 for (int i = 1; i < tokens.length; i++) {
-                    args += tokens[i];
+                    args += tokens[i] + " ";
                 }
+                args = args.trim();
                 String[] split;
                 try {
                     resultsArea.append(fileSystem.pwd() + " > " + command);
@@ -680,8 +697,9 @@ class Console extends JFrame {
                             resultsArea.append("Unrecognized command.");
                     }
                     resultsArea.append("\n");
+                } catch (NotADirectoryException e) {
+                    resultsArea.append("Not a directory.\n");
                 } catch (Exception e) {
-                    resultsArea.append(fileSystem.pwd() + " > " + command);
                     resultsArea.append("\n");
                     e.printStackTrace();
                 }
@@ -709,5 +727,9 @@ class PathNotFoundException extends Exception {
 }
 
 class FileExistsException extends Exception {
+
+}
+
+class NotAFileException extends Exception {
 
 }

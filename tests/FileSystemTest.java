@@ -45,7 +45,7 @@ public class FileSystemTest {
     }
 
     @Test(expected = NotADirectoryException.class)
-    public void changeDirectoryIntoFile() throws NotADirectoryException, PathNotFoundException {
+    public void changeDirectoryIntoFile() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("File");
         fs.cd("File");
@@ -113,7 +113,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void touch() throws NotADirectoryException, PathNotFoundException {
+    public void touch() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("file");
         List<String> list = fs.ls();
@@ -121,7 +121,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void edit() throws NotADirectoryException, PathNotFoundException {
+    public void edit() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.edit("test", "Hello World.");
         assertEquals("Hello World.", fs.cat("test"));
@@ -147,7 +147,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void rm() throws NotADirectoryException, PathNotFoundException {
+    public void rm() throws NotADirectoryException, PathNotFoundException, NotAFileException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("newFile");
         fs.rm("newFile");
@@ -155,7 +155,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteRm() throws NotADirectoryException, PathNotFoundException, FileExistsException {
+    public void absoluteRm() throws NotADirectoryException, PathNotFoundException, FileExistsException, NotAFileException {
         FileSystem fs = new FileSystem();
         fs.mkdir("another");
         fs.touch("another/newFile");
@@ -197,7 +197,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void copy() throws NotADirectoryException, PathNotFoundException {
+    public void copy() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("test");
         fs.cp("test", "test2");
@@ -214,7 +214,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void lsWithStar() throws NotADirectoryException, PathNotFoundException {
+    public void lsWithStar() throws NotADirectoryException, PathNotFoundException, FileExistsException {
         FileSystem fs = new FileSystem();
         fs.touch("test.doc");
         fs.touch("wow.doc");
@@ -267,4 +267,19 @@ public class FileSystemTest {
         fs.mkdir("papa");
         fs.mkdir("papa");
     }
+
+    @Test(expected = NotAFileException.class)
+    public void rmDirectory() throws PathNotFoundException, NotADirectoryException, FileExistsException, NotAFileException {
+        FileSystem fs = new FileSystem();
+        fs.mkdir("testing");
+        fs.rm("testing");
+    }
+
+    @Test(expected = FileExistsException.class)
+    public void touchMultiple() throws NotADirectoryException, PathNotFoundException, FileExistsException {
+        FileSystem fs = new FileSystem();
+        fs.touch("papa");
+        fs.touch("papa");
+    }
+
 }
