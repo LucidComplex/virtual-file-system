@@ -214,6 +214,10 @@ class FileSystem {
     }
 
     public void cd(String path) throws NotADirectoryException, PathNotFoundException {
+        if (path.equals("..")) {
+            currentNode = currentNode.getParent();
+            return;
+        }
         if (path.trim().length() == 0) {
             return;
         }
