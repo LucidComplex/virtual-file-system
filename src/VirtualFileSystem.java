@@ -3,9 +3,10 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -76,6 +77,10 @@ class FileObject implements Serializable, Comparable<FileObject> {
             }
         }
         return 1;
+    }
+
+    public void setCreationTime(long creationTime) {
+        this.creationTime = creationTime;
     }
 }
 
@@ -240,7 +245,9 @@ class FileSystem implements Serializable {
 
     public void cd(String path) throws NotADirectoryException, PathNotFoundException {
         if (path.equals("..")) {
-            currentNode = currentNode.getParent();
+            if (currentNode.getParent() != null) {
+                currentNode = currentNode.getParent();
+            }
             return;
         }
         if (path.trim().length() == 0) {
@@ -309,7 +316,11 @@ class FileSystem implements Serializable {
     }
 
     public void edit(String path, String content) throws NotADirectoryException, PathNotFoundException, FileExistsException {
-        touch(path);
+        try {
+            touch(path);
+        } catch (FileExistsException e) {
+            ;
+        }
         Node<FileObject> temp = currentNode;
         String[] paths = path.split("/");
         StringBuilder builder = new StringBuilder();
@@ -456,6 +467,8 @@ class FileSystem implements Serializable {
             }
             cd(builder.toString());
             copy.getItem().setFileName(paths[paths.length - 1]);
+            copy.getItem().setCreationTime(System.currentTimeMillis());
+            copy.setParent(currentNode);
             currentNode.addChild(copy);
         }
         currentNode = temp;
@@ -722,6 +735,64 @@ class Console extends JFrame {
                         case "show":
                             String out = fileSystem.cat(args);
                             println(out);
+                            break;
+                        case ">":
+                            fileSystem.rm(args);
+                            fileSystem.touch(args);
+                        case ">>":
+                            println(fileSystem.cat(args));
+                            workingDirectoryLabel.setText("EDITING " + args + " (CTRL+O to save) >");
+                            commandTextField.removeActionListener(this);
+                            final String[] text = {""};
+                            ActionListener editingListener = new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent actionEvent) {
+                                    text[0] += commandTextField.getText() + "\n";
+                                    println(commandTextField.getText());
+                                    commandTextField.setText("");
+                                }
+                            };
+                            commandTextField.addActionListener(editingListener);
+                            ActionListener that = this;
+                            String finalArgs = args;
+                            String finalArgs1 = args;
+                            commandTextField.addKeyListener(new KeyListener() {
+
+                                @Override
+                                public void keyTyped(KeyEvent keyEvent) {
+                                    return;
+                                }
+
+                                @Override
+                                public void keyPressed(KeyEvent keyEvent) {
+                                    if (keyEvent.getKeyCode() == 'O') {
+                                        System.out.println("event");
+                                        if (keyEvent.isControlDown()) {
+                                            commandTextField.removeActionListener(editingListener);
+                                            commandTextField.addActionListener(that);
+                                            commandTextField.removeKeyListener(this);
+                                            workingDirectoryLabel.setText(fileSystem.pwd());
+                                            try {
+                                                fileSystem.edit(finalArgs, text[0]);
+                                            } catch (NotADirectoryException e) {
+                                                println(exec + ": " + finalArgs1 + ": not a directory");
+                                            } catch (PathNotFoundException e) {
+                                                println(exec + ": " + finalArgs1 + ": no such file or directory");
+                                            } catch (FileExistsException e) {
+                                                println(exec + ": " + finalArgs1 + ": file exists");
+                                            } catch (Exception e) {
+                                                println(exec + ": " + finalArgs1 + ": unexpected error occurred");
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void keyReleased(KeyEvent keyEvent) {
+                                    return;
+                                }
+                            });
                             break;
                         default:
                             resultsArea.append("Unrecognized command.");
