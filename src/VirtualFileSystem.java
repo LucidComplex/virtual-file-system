@@ -308,18 +308,7 @@ class FileSystem {
             }
         }
         if (toMove != null) {
-            paths = after.split("/");
-            builder = new StringBuilder();
-            if (after.startsWith("/")) {
-                for (int i = 2; i < paths.length - 1; i++) {
-                    builder.append(paths[i]);
-                }
-            } else {
-                for (int i = 0; i < paths.length - 1; i++) {
-                    builder.append(paths[i]);
-                }
-            }
-            cd(builder.toString());
+            cd(after);
             toMove.remove();
             toMove.setParent(currentNode);
             currentNode.addChild(toMove);

@@ -168,7 +168,7 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
-        fs.mv("testFile", "folder/testFile");
+        fs.mv("testFile", "folder");
         assertEquals(1, fs.ls().size());
         List<String> listing = fs.ls("folder");
         assertTrue(listing.contains("testFile"));
@@ -179,7 +179,7 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
-        fs.mv("/root/testFile", "/root/folder/testFile");
+        fs.mv("/root/testFile", "/root/folder");
         assertEquals(1, fs.ls().size());
         List<String> listing = fs.ls("folder");
         assertTrue(listing.contains("testFile"));
