@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Predicate;
 
 /**
  * Created by tan on 11/12/16.
@@ -164,8 +165,35 @@ class FileSystem {
 
     public List<String> ls(String path) throws NotADirectoryException, PathNotFoundException {
         Node<FileObject> temp = currentNode;
-        cd(path);
-        List<String> listing = ls();
+        List<String> listing = null;
+        if (path.contains("*")) {
+            String[] paths = path.split("/");
+            // build a path that cd understands, i.e., path minus the file name
+            StringBuilder builder = new StringBuilder();
+            if (path.startsWith("/")) {
+                for (int i = 2; i < paths.length - 1; i++) {
+                    builder.append(paths[i]);
+                }
+            } else {
+                for (int i = 0; i < paths.length - 1; i++) {
+                    builder.append(paths[i]);
+                }
+            }
+            cd(builder.toString());
+            listing = ls();
+            listing.removeIf(new Predicate<String>() {
+                @Override
+                public boolean test(String s) {
+                    String regex = paths[paths.length - 1]; // *.doc
+                    regex = regex.replaceAll("\\.", "\\\\.");
+                    regex = regex.replaceAll("\\*", ".*");
+                    return !s.matches(regex);
+                }
+            });
+        } else {
+            cd(path);
+            listing = ls();
+        }
         currentNode = temp;
         return listing;
     }

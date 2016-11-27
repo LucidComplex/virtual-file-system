@@ -212,4 +212,15 @@ public class FileSystemTest {
         fs.cp("/root/test", "/root/folder/test2");
         assertTrue(fs.ls("folder").contains("test2") && fs.ls().contains("test"));
     }
+
+    @Test
+    public void lsWithStar() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.touch("test.doc");
+        fs.touch("wow.doc");
+        fs.touch("amazing.txt");
+        List<String> listing = fs.ls("/root/*.doc");
+        assertEquals(2, listing.size());
+        assertTrue(listing.contains("test.doc") && listing.contains("wow.doc"));
+    }
 }
