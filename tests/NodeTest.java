@@ -64,4 +64,17 @@ public class NodeTest {
         testNode.getChild(0).remove();
         assertEquals(0, testNode.getChildren().size());
     }
+
+    @Test
+    public void cloneTest() {
+        Node<String> testNode = new Node<>();
+        testNode.addChild("test");
+        testNode.setItem("testing");
+        Node<String> cloned = new Node<>(testNode);
+        assertEquals("testing", cloned.getItem());
+        testNode.setItem("haha");
+        assertEquals("testing", cloned.getItem());
+        testNode.getChild(0).setItem("one");
+        assertEquals("test", cloned.getChild(0).getItem());
+    }
 }

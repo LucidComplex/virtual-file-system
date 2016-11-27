@@ -352,6 +352,19 @@ class FileSystem {
         }
         currentNode = temp;
     }
+
+    public void cp(String source, String target) {
+        Node<FileObject> sourceNode = null;
+        for (Node<FileObject> child : currentNode.getChildren()) {
+            if (child.getItem().getFileName().equals(source)) {
+                sourceNode = child;
+                break;
+            }
+        }
+        if (sourceNode != null) {
+            currentNode.addChild(new Node<FileObject>(sourceNode));
+        }
+    }
 }
 
 class Node<T> {
@@ -371,6 +384,15 @@ class Node<T> {
     public Node(T item, Node<T> parent) {
         this(item);
         this.parent = parent;
+    }
+
+    public Node(Node<T> sourceNode) {
+        item = sourceNode.item;
+        parent = sourceNode.parent;
+        children = new LinkedList<>();
+        for (Node<T> child : sourceNode.children) {
+            children.add(new Node<T>(child));
+        }
     }
 
     public List<Node<T>> getChildren() {

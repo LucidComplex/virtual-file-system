@@ -195,4 +195,12 @@ public class FileSystemTest {
         assertFalse(listing.contains("testFile"));
         assertTrue(listing.contains("testingFile"));
     }
+
+    @Test
+    public void copy() throws NotADirectoryException, PathNotFoundException {
+        FileSystem fs = new FileSystem();
+        fs.touch("test");
+        fs.cp("test", "test2");
+        assertTrue(fs.ls().contains("test2") && fs.ls().contains("test"));
+    }
 }
