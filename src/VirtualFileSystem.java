@@ -183,8 +183,8 @@ class FileSystem {
         }
         if (path.contains("/")) {
             String[] dirs = path.split("/");
-            for (int i = 0; i < dirs.length; i++) {
-                cd(dirs[i]);
+            for (String dir : dirs) {
+                cd(dir);
             }
             return;
         }
@@ -399,7 +399,9 @@ class Node<T> {
             return true;
         }
         for (Node<T> node : children) {
-            return node.search(item);
+            if (node.search(item)) {
+                return true;
+            }
         }
         return false;
     }
@@ -436,8 +438,8 @@ class Node<T> {
         this.parent = parent;
     }
 
-    public void addChild(Node<T> toMove) {
-        children.add(toMove);
+    public void addChild(Node<T> child) {
+        children.add(child);
     }
 }
 

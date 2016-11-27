@@ -37,7 +37,7 @@ public class NodeTest {
 
     @Test
     public void search() {
-        Node<String> testNode = new Node();
+        Node<String> testNode = new Node<>();
         testNode.addChild("test");
         testNode.getChild(0).setItem("123");
         testNode.getChild(0).addChild("here");
@@ -49,7 +49,7 @@ public class NodeTest {
 
     @Test
     public void getChildByItem() {
-        Node<String> testNode = new Node();
+        Node<String> testNode = new Node<>();
         testNode.addChild("test");
         Node<String> childNode = testNode.getChild("test");
 
