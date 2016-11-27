@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 public class VirtualFileSystem {
 }
 
-class FileObject implements Serializable {
+class FileObject implements Serializable, Comparable<FileObject> {
     public static final int DIRECTORY = 0;
     public static final int FILE = 1;
     private String fileName;
@@ -59,6 +59,18 @@ class FileObject implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    @Override
+    public int compareTo(FileObject fileObject) {
+        if (fileObject.getFileName().equals(this.fileName)) {
+            if (fileObject.getCreationTime() == this.creationTime) {
+                return 0;
+            } else if (fileObject.getCreationTime() < creationTime) {
+                return -1;
+            }
+        }
+        return 1;
     }
 }
 
@@ -413,7 +425,7 @@ class FileSystem {
     }
 }
 
-class Node<T> implements Serializable {
+class Node<T extends Comparable<T>> implements Serializable {
     private T item;
     private Node<T> parent;
     private List<Node<T>> children;
@@ -463,7 +475,7 @@ class Node<T> implements Serializable {
     }
 
     public boolean search(T item) {
-        if (item.equals(this.item)) {
+        if (item.compareTo(this.item) == 0) {
             return true;
         }
         for (Node<T> node : children) {

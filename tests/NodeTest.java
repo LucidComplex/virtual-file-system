@@ -38,6 +38,7 @@ public class NodeTest {
     @Test
     public void search() {
         Node<String> testNode = new Node<>();
+        testNode.setItem("root");
         testNode.addChild("test");
         testNode.getChild(0).setItem("123");
         testNode.getChild(0).addChild("here");
