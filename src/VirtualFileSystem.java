@@ -131,9 +131,8 @@ class FileSystem {
         return null;
     }
 
-    public String pwd() {
+    private String buildPath(Node<FileObject> node) {
         Stack<String> dir = new Stack<>();
-        Node<FileObject> node = currentNode;
         while (node != null) {
             dir.push(node.getItem().getFileName());
             node = node.getParent();
@@ -144,6 +143,10 @@ class FileSystem {
             builder.append(dir.pop());
         }
         return builder.toString();
+    }
+
+    public String pwd() {
+        return buildPath(currentNode);
     }
 
     public void mkdir(String path) throws NotADirectoryException, PathNotFoundException {
