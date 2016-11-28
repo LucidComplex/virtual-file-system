@@ -15,6 +15,9 @@ import java.util.function.Predicate;
  * Created by tan on 11/12/16.
  */
 public class VirtualFileSystem {
+    public static void main(String[] args) {
+        Console console = new Console();
+    }
 }
 
 class FileObject implements Serializable, Comparable<FileObject> {
@@ -828,9 +831,6 @@ class Console extends JFrame {
     private void println(String message) {
         resultsArea.append(message);
         resultsArea.append("\n");
-    }
-    public static void main(String[] args) {
-        Console console = new Console();
     }
 }
 
