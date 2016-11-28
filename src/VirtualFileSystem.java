@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 public class VirtualFileSystem {
     public static void main(String[] args) {
         Console console = new Console();
+        console.readFile(new File("mp3.in"));
     }
 }
 
@@ -247,6 +248,7 @@ class FileSystem implements Serializable {
     }
 
     public void cd(String path) throws NotADirectoryException, PathNotFoundException {
+        Node<FileObject> temp = currentNode;
         if (path.equals("..")) {
             if (currentNode.getParent() != null) {
                 currentNode = currentNode.getParent();
@@ -274,12 +276,14 @@ class FileSystem implements Serializable {
         for (Node<FileObject> child : currentNode.getChildren()) {
             if (child.getItem().getFileName().equals(path)) {
                 if (child.getItem().isFile()) {
+                    currentNode = temp;
                     throw new NotADirectoryException();
                 }
                 currentNode = child;
                 return;
             }
         }
+        currentNode = temp;
         throw new PathNotFoundException();
     }
 
@@ -371,6 +375,7 @@ class FileSystem implements Serializable {
                     throw new NotAFileException();
                 }
                 child.remove();
+                break;
             }
         }
         currentNode = temp;
@@ -640,9 +645,13 @@ class Console extends JFrame {
     private JTextField commandTextField;
     private JTextArea resultsArea;
 
+    private BufferedReader bReader;
+    private boolean readingFile;
+    private File file;
     private FileSystem fileSystem;
     Console() {
         super("Console");
+        readingFile = false;
         fileSystem = Utilities.deserialize();
         if (fileSystem == null) {
             fileSystem = new FileSystem();
@@ -681,6 +690,7 @@ class Console extends JFrame {
         commandTextField.grabFocus();
         getContentPane().add(textPanel, BorderLayout.SOUTH);
 
+        Console consoleRef = this;
         // set event handlers
         commandTextField.addActionListener(new ActionListener() {
             @Override
@@ -808,7 +818,6 @@ class Console extends JFrame {
                             String finalArgs = args;
                             String finalArgs1 = args;
                             commandTextField.addKeyListener(new KeyListener() {
-
                                 @Override
                                 public void keyTyped(KeyEvent keyEvent) {
                                     return;
@@ -817,7 +826,6 @@ class Console extends JFrame {
                                 @Override
                                 public void keyPressed(KeyEvent keyEvent) {
                                     if (keyEvent.getKeyCode() == 'O') {
-                                        System.out.println("event");
                                         if (keyEvent.isControlDown()) {
                                             commandTextField.removeActionListener(editingListener);
                                             commandTextField.addActionListener(that);
@@ -834,6 +842,11 @@ class Console extends JFrame {
                                             } catch (Exception e) {
                                                 println(exec + ": " + finalArgs1 + ": unexpected error occurred");
                                                 e.printStackTrace();
+                                            }
+                                            if (readingFile) {
+                                                readFile(file);
+                                                readingFile = false;
+                                                consoleRef.writeFile(new File("mp3.out"));
                                             }
                                         }
                                     }
@@ -864,6 +877,7 @@ class Console extends JFrame {
                 } catch (BadLocationException e) {
                     throw new RuntimeException();
                 }
+                Utilities.serialize(fileSystem);
             }
         });
 
@@ -879,6 +893,56 @@ class Console extends JFrame {
     private void println(String message) {
         resultsArea.append(message);
         resultsArea.append("\n");
+    }
+
+    public void readFile(File file) {
+        this.file = file;
+        readingFile = true;
+        if (bReader == null) {
+            FileReader reader = null;
+            try {
+                reader = new FileReader(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            bReader = new BufferedReader(reader);
+        }
+        String line = "";
+        try {
+            while ((line = bReader.readLine()) != null) {
+                run(line);
+                if (line.contains(">")) {
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void run(String line) {
+        commandTextField.setText(line);
+        for (ActionListener listener : commandTextField.getActionListeners()) {
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+        }
+    }
+
+    public void writeFile(File file) {
+        BufferedWriter bWriter = null;
+        try {
+            bWriter = new BufferedWriter(new FileWriter(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String out = resultsArea.getText();
+        out = out.replaceAll("/root.*>.*\n", "");
+        out = out.replaceAll("\\n(?=\\n)", "");
+        try {
+            bWriter.write(out);
+            bWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
