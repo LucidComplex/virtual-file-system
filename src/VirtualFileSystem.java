@@ -705,44 +705,92 @@ class Console extends JFrame {
                             }
                             break;
                         case "touch":
+                            if (args.length() == 0) {
+                                println("usage: touch <file>");
+                                break;
+                            }
                             fileSystem.touch(args);
                             break;
                         case "cd":
+                            if (args.length() == 0) {
+                                println("usage: cd <directory>");
+                                break;
+                            }
                             fileSystem.cd(args);
                             workingDirectoryLabel.setText(fileSystem.pwd());
                             break;
                         case "mkdir":
+                            if (args.length() == 0) {
+                                println("usage: mkdir <new directory name>");
+                                break;
+                            }
                             fileSystem.mkdir(args);
                             break;
                         case "rmdir":
+                            if (args.length() == 0) {
+                                println("usage: rmdir <directory>");
+                                break;
+                            }
                             fileSystem.rmdir(args);
                             break;
                         case "rm":
+                            if (args.length() == 0) {
+                                println("usage: rm <file>");
+                                break;
+                            }
                             fileSystem.rm(args);
                             break;
                         case "rn":
+                            if (args.length() == 0) {
+                                println("usage: rn <file> <new file name>");
+                                break;
+                            }
                             split = args.split(" ");
                             fileSystem.rn(split[0], split[1]);
                             break;
                         case "mv":
+                            if (args.length() == 0) {
+                                println("usage: mv <source> <target>");
+                                break;
+                            }
                             split = args.split(" ");
                             fileSystem.mv(split[0], split[1]);
                             break;
                         case "cp":
+                            if (args.length() == 0) {
+                                println("usage: cp <source> <target>");
+                                break;
+                            }
                             split = args.split(" ");
                             fileSystem.cp(split[0], split[1]);
                             break;
                         case "whereis":
+                            if (args.length() == 0) {
+                                println("usage: whereis <query>");
+                                break;
+                            }
                             fileSystem.whereis(args);
                             break;
                         case "show":
+                            if (args.length() == 0) {
+                                println("usage: show <file>");
+                                break;
+                            }
                             String out = fileSystem.cat(args);
                             println(out);
                             break;
                         case ">":
+                            if (args.length() == 0) {
+                                println("usage: > <file>");
+                                break;
+                            }
                             fileSystem.rm(args);
                             fileSystem.touch(args);
                         case ">>":
+                            if (args.length() == 0) {
+                                println("usage: >> <file>");
+                                break;
+                            }
                             println(fileSystem.cat(args));
                             workingDirectoryLabel.setText("EDITING " + args + " (CTRL+O to save) >");
                             commandTextField.removeActionListener(this);
