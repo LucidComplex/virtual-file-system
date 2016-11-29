@@ -164,7 +164,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void move() throws NotADirectoryException, PathNotFoundException, FileExistsException {
+    public void move() throws NotADirectoryException, PathNotFoundException, FileExistsException, IllegalOperationException {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
@@ -175,7 +175,7 @@ public class FileSystemTest {
     }
 
     @Test
-    public void absoluteMove() throws NotADirectoryException, PathNotFoundException, FileExistsException {
+    public void absoluteMove() throws NotADirectoryException, PathNotFoundException, FileExistsException, IllegalOperationException {
         FileSystem fs = new FileSystem();
         fs.touch("testFile");
         fs.mkdir("folder");
@@ -279,6 +279,19 @@ public class FileSystemTest {
         FileSystem fs = new FileSystem();
         fs.touch("papa");
         fs.touch("papa");
+    }
+
+    @Test
+    public void mvRenames() throws NotADirectoryException, PathNotFoundException, FileExistsException, IllegalOperationException {
+        FileSystem fs = new FileSystem();
+        fs.touch("papa");
+        fs.mv("papa", "papa2");
+        assertEquals(1, fs.ls().size());
+        fs.cat("papa2");
+        fs.mkdir("father");
+        fs.mv("papa2", "father");
+        assertEquals(1, fs.ls().size());
+        assertEquals(1, fs.ls("father").size());
     }
 
 }

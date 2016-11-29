@@ -381,7 +381,7 @@ class FileSystem implements Serializable {
         currentNode = temp;
     }
 
-    public void mv(String before, String after) throws NotADirectoryException, PathNotFoundException {
+    public void mv(String before, String after) throws NotADirectoryException, PathNotFoundException, IllegalOperationException {
         Node<FileObject> temp = currentNode;
         String[] paths = before.split("/");
         StringBuilder builder = new StringBuilder();
@@ -404,7 +404,12 @@ class FileSystem implements Serializable {
             }
         }
         if (toMove != null) {
-            cd(after);
+            try {
+                cd(after);
+            } catch(PathNotFoundException e) {
+                // must probably do rename
+                rn(before, after);
+            }
             toMove.remove();
             toMove.setParent(currentNode);
             currentNode.addChild(toMove);
