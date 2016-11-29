@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -326,7 +327,6 @@ class FileSystem implements Serializable {
         try {
             touch(path);
         } catch (FileExistsException e) {
-            ;
         }
         Node<FileObject> temp = currentNode;
         String[] paths = path.split("/");
@@ -368,8 +368,16 @@ class FileSystem implements Serializable {
         }
         cd(builder.toString());
         List<Node<FileObject>> children = currentNode.getChildren();
+        Stack<Node<FileObject>> toRemove = new Stack<>();
         for (Node<FileObject> child : children) {
-            if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
+            if (paths[paths.length - 1].contains("*")) {
+                String regex = paths[paths.length - 1]; // *.doc
+                regex = regex.replaceAll("\\.", "\\\\.");
+                regex = regex.replaceAll("\\*", ".*");
+                if (child.getItem().getFileName().matches(regex)) {
+                    toRemove.add(child);
+                }
+            } else if (child.getItem().getFileName().equals(paths[paths.length - 1])) {
                 if (!child.getItem().isFile()) {
                     currentNode = temp;
                     throw new NotAFileException();
@@ -377,6 +385,9 @@ class FileSystem implements Serializable {
                 child.remove();
                 break;
             }
+        }
+        while (!toRemove.empty()) {
+            toRemove.pop().remove();
         }
         currentNode = temp;
     }
@@ -466,6 +477,7 @@ class FileSystem implements Serializable {
             }
         }
         if (sourceNode != null) {
+            Object object = Utilities.clone(sourceNode);
             Node<FileObject> copy = (Node<FileObject>) Utilities.clone(sourceNode);
             builder = new StringBuilder();
             paths = target.split("/");
@@ -825,7 +837,6 @@ class Console extends JFrame {
                             commandTextField.addKeyListener(new KeyListener() {
                                 @Override
                                 public void keyTyped(KeyEvent keyEvent) {
-                                    return;
                                 }
 
                                 @Override
@@ -859,7 +870,6 @@ class Console extends JFrame {
 
                                 @Override
                                 public void keyReleased(KeyEvent keyEvent) {
-                                    return;
                                 }
                             });
                             break;

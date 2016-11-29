@@ -8,14 +8,14 @@ import static org.junit.Assert.*;
 public class NodeTest {
     @Test
     public void setItem() {
-        Node<String> testNode = new Node();
+        Node<String> testNode = new Node<>();
         testNode.setItem("testing");
         assertEquals("testing", testNode.getItem());
     }
 
     @Test
     public void addChild() {
-        Node<String> testNode = new Node();
+        Node<String> testNode = new Node<>();
         testNode.addChild("test");
         assertEquals("test", testNode.getChild(0).getItem());
         assertEquals(testNode, testNode.getChild(0).getParent());
@@ -23,7 +23,7 @@ public class NodeTest {
 
     @Test
     public void remove() {
-        Node<String> testNode = new Node();
+        Node<String> testNode = new Node<>();
         testNode.addChild("test");
         testNode.removeChild(0);
         try {

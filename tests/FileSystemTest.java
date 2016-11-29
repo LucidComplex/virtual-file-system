@@ -294,4 +294,14 @@ public class FileSystemTest {
         assertEquals(1, fs.ls("father").size());
     }
 
+    @Test
+    public void rmWildcard() throws PathNotFoundException, NotAFileException, NotADirectoryException, FileExistsException {
+        FileSystem fs = new FileSystem();
+        fs.touch("wow.txt");
+        fs.touch("haha.txt");
+        fs.touch("not me.mp4");
+        fs.rm("*.txt");
+        assertEquals(1, fs.ls().size());
+    }
+
 }
